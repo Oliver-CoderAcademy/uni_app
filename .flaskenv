@@ -1,2 +1,2 @@
-FLASK_APP=uni_app
+FLASK_APP=uni_app/main:create_app
 FLASK_ENV=development
