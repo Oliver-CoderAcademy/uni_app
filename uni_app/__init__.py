@@ -1,9 +1,67 @@
-from flask import Flask
+import os
+from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 
+# using a list comprehension and multiple assignment 
+# to grab the environment variables we need
+(
+    db_user,
+    db_pass,
+    db_name,
+    db_domain,
+) = (os.environ.get(item) for item in [
+    "DB_USER",
+    "DB_PASS",
+    "DB_NAME", 
+    "DB_DOMAIN",
+    ]
+)
+
+# Creating the flask app object - this is the core of our app!
 app = Flask(__name__)
 
+# configuring our app:
+# telling it where the database is
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql+psycopg2://{db_user}:{db_pass}@{db_domain}/{db_name}"
+# This setting just prevents Flask from shouting warnings at us
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
+
+# creating our database object! This allows us to use our ORM
+db = SQLAlchemy(app)
+
+# Our first model! 
+# This tells the ORM what tables should exist in the database
+# It also lets us retrieve info from those tables
+class Course(db.Model):
+    # The tablename attribute specifies what the name of the table should be
+    __tablename__ = "courses"
+
+    # These attributes specify what columns the table should have
+    course_id = db.Column(db.Integer, primary_key=True)
+    course_name = db.Column(db.String(80), unique=True, nullable=False)
+
+    # The init method lets us create a python object to insert as a new row
+    def __init__(self,  course_name):
+        self.course_name = course_name
+
+    # The serialize property lets us turn our course objects into JSON easily
+    # (we'll replace this with something more convenient later!)
+    @property
+    def serialize(self):
+        return {
+            "course_id": self.course_id,
+            "course_name": self.course_name
+        }
+
+# When the app first starts up, we tell our ORM to create any database
+# tables that don't already exist...
+db.create_all()
+
+# Then we can register our routes!
+
+# This one is just a placeholder for now, no CRUD here
 @app.route('/')
-def hello_world():
+def homepage():
     """
     The homepage route. 
     
@@ -13,57 +71,67 @@ def hello_world():
     """
     return "Hello, world! Check this out!"
 
-@app.route('/students/')
-def get_students():
-    """
-    The students page. 
+# The GET routes endpoint
+@app.route("/courses/", methods=["GET"])
+def get_courses():
+    # We use our model to query the database
+    courses = Course.query.all()
+    # and then serialize the resulting list of courses to return as JSON
+    return jsonify([course.serialize for course in courses])
 
-    This will later contain a list of all students enrolled at the university.
-    Since we are specifying a route of '/students/', this page is available from the address
-    127.0.0.1:5000/students/ (at least during production).
-    """
-    return "This will be a list of all students at the university."
+# The POST route endpoint
+@app.route("/courses/", methods=["POST"])
+def create_course():
+    # We initialise a new course instance based on the request data
+    new_course=Course(request.json['course_name'])
+    # add a row to the database with its info
+    db.session.add(new_course)
+    # commit the transaction
+    db.session.commit()
+    # serialise our new instance, and return as JSON
+    return jsonify(new_course.serialize)
 
-@app.route('/students/<int:student_id>/')
-def get_specific_student(student_id):
-    """
-    The individual student page.
+# An endpoint to GET info about a specific course
+@app.route("/courses/<int:id>/", methods = ["GET"])
+def get_course(id):
+    # Using the query.get_or_404 method here lets us automatically
+    # return a 404 code if the indicated course doesn't exist
+    course = Course.query.get_or_404(id)
+    # but if it does exist, we just serialize it and return is as JSON
+    return jsonify(course.serialize)
 
-    This route accepts a URL parameter called student_id (must be an integer).
+# A PUT/PATCH route to update course info
+@app.route("/courses/<int:id>/", methods=["PUT", "PATCH"])
+def update_course(id):
+    # To perform an update, we need a filtered list of queries
+    # using query.get won't work here - just a quirk of Flask-SQLAlchemy's 
+    # interface. It's set up this way so that you can update multiple records
+    # at once if more than one matches your filter criteria
+    course = Course.query.filter_by(course_id=id)
+    # We hand a dictionary of the updated fields and their new values over
+    # to the update method
+    course.update(dict(course_name=request.json["course_name"]))
+    # Gotta commit that transaction!
+    db.session.commit()
+    # since we are dealing with a filtered list of courses here, instead of
+    # just a single object like we would have if we had been able to use the
+    # query.get method, we have to grab the first item in the list before we
+    # serialize it. This is the case even though there's only one item in this
+    # list
+    return jsonify(course.first().serialize)
 
-    That means that any address of the form localhost:5000/students/<some_number_here>/ will
-    be available and will call the get_specific_student function. 
-
-    The student_id argument supplied will be whatever number is in the url, and
-    it will be included in the text on the page!
-    """
-    return f"This will be a page displaying information about student number {student_id}."
-
-@app.route('/calc/<int:f_num>/<string:operator>/<int:s_num>/')
-def calc(f_num, operator, s_num):
-    """
-    This is just a fun demonstration route, to show how more than one URL parameter can be used.
-
-    This address contains three URL parameters: f_num, operator, and s_num. That means that any
-    address of the form localhost:5000/calc/<some_number>/<some_string>/<some_number>/ will be
-    available on our page. The first number in the url will be handed over to our function
-    as the f_num argument, the string will be handed over as the operator argument, and the second
-    number will be handed over as the s_num argument.
-
-    The function called when any address matching that pattern is visited works as follows:
-    If the operator string supplied is either a plus symbol, a minus symbol, or an asterisk,
-    then the function returns a mathematical evaluation of the three symbols. So for instance...
-        /calc/1/+/2/ 
-    will render a web page displaying
-        1+2 = 3
-
-    If the string supplied is not one of those three symbols, on the other hand, the page will
-    display the message
-        'Please enter a valid calculation.'
-    """
-    if operator in ["+", "-", "*"]:
-        return f"{f_num}{operator}{s_num} = {eval(f'{f_num}{operator}{s_num}')}"
-    return "Please enter a valid calculation."
-
+# Finally, we round out our CRUD resource with a DELETE method
+@app.route("/courses/<int:id>/", methods=["DELETE"])
+def delete_course(id):
+    # Can't delete a course that doesn't exist, so get_or_404 here is correct
+    course = Course.query.get_or_404(id)
+    # delete the course and commit the transaction
+    db.session.delete(course)
+    db.session.commit()
+    # We deleted the row in the database but we still have the python object
+    # since we fetched it before we called session.delete, so we can 
+    # serialize it and return it to the user to show them what they deleted!
+    return jsonify(course.serialize)
+    
 if __name__ == '__main__':
     app.run(debug=True)
