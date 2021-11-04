@@ -1,8 +1,9 @@
-import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 
 db = SQLAlchemy()
+ma = Marshmallow()
 
 def create_app():
     
@@ -12,6 +13,7 @@ def create_app():
     app.config.from_object("config.app_config")
 
     db.init_app(app)
+    ma.init_app(app)
 
     # Then we can register our routes!
     from controllers import registerable_controllers

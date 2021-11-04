@@ -15,11 +15,3 @@ class Course(db.Model):
     def __init__(self,  course_name):
         self.course_name = course_name
 
-    # The serialize property lets us turn our course objects into JSON easily
-    # (we'll replace this with something more convenient later!)
-    @property
-    def serialize(self):
-        return {
-            "course_id": self.course_id,
-            "course_name": self.course_name
-        }
