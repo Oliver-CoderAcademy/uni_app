@@ -12,6 +12,6 @@ class Course(db.Model):
     course_name = db.Column(db.String(80), unique=True, nullable=False)
 
     # The init method lets us create a python object to insert as a new row
-    def __init__(self,  course_name):
+    def __init__(self, course_name):
         self.course_name = course_name
 
