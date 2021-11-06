@@ -28,13 +28,9 @@ def get_courses():
 # The POST route endpoint
 @courses.route("/courses/", methods=["POST"])
 def create_course():
-    # We initialise a new course instance based on the request data
     new_course=course_schema.load(request.json)
-    # add a row to the database with its info
     db.session.add(new_course)
-    # commit the transaction
     db.session.commit()
-    # serialise our new instance, and return as JSON
     return jsonify(course_schema.dump(new_course))
 
 # An endpoint to GET info about a specific course
