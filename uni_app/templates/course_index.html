@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+    <h2>New Course</h2>
+    <div>
+        <form action="/courses/" method="POST">
+            <input type="text" name="course_name" placeholder="Course Name...">
+            <button>Create</button>
+        </form>
+    </div>
+</div>    
+
+<h2>Course List</h2>
+{% for course in page_data.courses %}
+        <li><a href="/courses/{{ course.course_id }}/">{{ course.course_name }}</a></li>
+    {% endfor %}
+{% endblock %}
