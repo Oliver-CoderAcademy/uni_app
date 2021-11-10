@@ -11,7 +11,7 @@
 </div>    
 
 <h2>Course List</h2>
-{% for course in page_data.courses %}
+    {% for course in page_data.courses %}
         <li><a href="/courses/{{ course.course_id }}/">{{ course.course_name }}</a></li>
     {% endfor %}
 {% endblock %}

@@ -3,6 +3,7 @@ from main import db
 from models.courses import Course
 from schemas.course_schema import courses_schema, course_schema
 
+
 courses = Blueprint('courses', __name__)
 
 # This one is just a placeholder for now, no CRUD here
