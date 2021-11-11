@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    <br/>
+    <div>
+        <h2>New Course</h2>
+        <div>
+            <form action="/courses/" method="POST">
+                <input type="text" name="course_name" placeholder="Course Name..."/> 
+                <button>Create</button>
+            </form>
+        </div>
+    </div>
+    <br/>
+    <h2>Course List</h2>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>    
+                <th>Course Name</th>
+            </tr>
+        </thead>
+        {% for course in page_data.courses %}
+        <tbody>
+            <tr>
+                <td>
+                    <a href="/courses/{{ course.course_id }}/">{{ course.course_name }}</a></br>
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+{% endblock %}
+
