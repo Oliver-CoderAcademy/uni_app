@@ -11,7 +11,7 @@ def load_user(user):
 
 @lm.unauthorized_handler
 def unauthorized():
-    return redirect('/login/')
+    return redirect('/users/login/')
 
 users = Blueprint('users', __name__)
 
