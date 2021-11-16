@@ -8,6 +8,9 @@ Tests are currently mostly disabled, having made the transition from an API serv
 
 The app runs on `Flask`, using a `PostgreSQL` database via `Psycopg2` and `SQLAlchemy`. Serialization is courtesy of `Marshmallow`, templating from `Jinja2`, migrations from `Flask-Migrate` with `Alembic`, and sessions via `Flask-Login`.
 
+## Upcoming features
+The next addition will be file storage using AWS S3. 
+
 ## Dependencies:
 * Python 3
 * PostgreSQL
