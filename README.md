@@ -2,7 +2,7 @@
 An app to keep track of tertiary courses and the students enrolled in them.
 
 ## Current features:
-This app is a demonstration for content delivery, and is therefore "feature light". It has a `User` model with login/logout functionality using session cookies, and currently has one other CRUD resource: a `Course` model. Upcoming lessons will add a foreign-keyed `Student` model, and will add the `.owner` foreign-key relation. To the `Course` model.
+This app is a demonstration for content delivery, and is therefore "feature light". It has a `User` model with login/logout functionality using session cookies, and currently has one other CRUD resource: a `Course` model. Upcoming lessons will add a `Student` in a many-to-one relation with `Course`, and will add the `.owner` foreign-key relation to the `Course` model.
 
 Tests are currently mostly disabled, having made the transition from an API serving JSON to templated HTML. 
 
