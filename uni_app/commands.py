@@ -32,6 +32,7 @@ def seed_db():
 def reset_db():
     """Drops, creates, and seeds tables in one step."""
     db.drop_all()
+    db.engine.execute("DROP TABLE IF EXISTS alembic_version;")
     print("Tables deleted!")
     db.create_all()
     print("Tables created!")

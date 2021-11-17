@@ -1,24 +1,52 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <title>
             Uni App
         </title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">    
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     </head>
-    <body>
+    <body class="bg-dark">
         <header>
-            <h1>{{ page_data.page_title }}</h1>
-            <nav>
-                <a href="/">Home</a>
-                <a href="/courses/">Course Index</a>
+            <h1 class="p-3 mb-2 bg-warning text-black">{{ page_data.page_title }}</h1>
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="/" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/courses/" class="nav-link">Course Index</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/users/" class="nav-link">User Index</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a href="/users/account/" class="nav-link">Account</a>
+                        </li>
+                        <form action="/users/logout/" method="POST" class="form-inline">
+                            <button class="btn nav-link">Log Out</button>
+                        </form>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="/users/login/" class="nav-link">Log In</a>   
+                        </li>
+                        <li class="nav-item">
+                            <a href="/users/signup/" class="nav-link">Sign Up</a>    
+                        </li>    
+                    {% endif %}
+                </ul>
             </nav>
         </header>
-        <div>
-            {% block content %}
+        <div class="bg-light text-black">
+            {% block content%}        
+
 
             {% endblock %}
         </div>
-        <footer>Thanks for visiting!</footer>
+        <footer class="text-light">Thanks for visiting!</footer>
     </body>
 </html>

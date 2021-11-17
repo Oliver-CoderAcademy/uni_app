@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request, render_template, redirect, url_fo
 from main import db
 from models.courses import Course
 from schemas.course_schema import courses_schema, course_schema
+from flask_login import login_required
 
 
 courses = Blueprint('courses', __name__)
@@ -21,10 +22,12 @@ def get_courses():
         "page_title": "Course Index",
         "courses": courses_schema.dump(Course.query.all())
     }
+    print(data)
     return render_template("course_index.html", page_data=data)
 
 # The POST route endpoint
 @courses.route("/courses/", methods=["POST"])
+@login_required
 def create_course():
     new_course=course_schema.load(request.form)
     db.session.add(new_course)
@@ -43,6 +46,7 @@ def get_course(id):
 
 # A PUT/PATCH route to update course info
 @courses.route("/courses/<int:id>/", methods=["POST"])
+@login_required
 def update_course(id):
     
     course = Course.query.filter_by(course_id=id)
@@ -60,6 +64,7 @@ def update_course(id):
 
 # Finally, we round out our CRUD resource with a DELETE method
 @courses.route("/courses/<int:id>/delete/", methods=["POST"])
+@login_required
 def delete_course(id):
     # Can't delete a course that doesn't exist, so get_or_404 here is correct
     course = Course.query.get_or_404(id)

@@ -9,6 +9,7 @@ from flask_login import LoginManager
 db = SQLAlchemy()
 ma = Marshmallow()
 lm = LoginManager()
+migrate = Migrate()
 
 def create_app():
     
@@ -20,6 +21,8 @@ def create_app():
     db.init_app(app)
     ma.init_app(app)
     lm.init_app(app)
+    migrate.init_app(app, db)
+    
 
     from commands import db_commands
     app.register_blueprint(db_commands)
