@@ -4,9 +4,20 @@
     <h2>{{ page_data.course.course_name }}</h2>
     <p>Course ID: {{ page_data.course.course_id }}</p>
 
-    <form action="/courses/{{ page_data.course.course_id }}/", method="POST">
+    <img src= "{{ page_data.image }}" style="width: 250px">
+    <br/><br/>
+    <h3>Update Course Info</h3>
+    <form action="/courses/{{ page_data.course.course_id }}/" method="POST">
         <input type="text" name="course_name" placeholder="Course Name..."/> 
         <button>Update</button>
+    </form>
+
+    <br/><br/>
+
+    <h3>Update Image:</h3>
+    <form action="/courses/{{ page_data.course.course_id }}/image/" method="POST" enctype = "multipart/form-data">
+        <input type="file" name="image">
+        <input type="submit">
     </form>
 
     <br/><br/>

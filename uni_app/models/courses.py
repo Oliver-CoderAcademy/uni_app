@@ -12,7 +12,7 @@ class Course(db.Model):
     course_name = db.Column(db.String(80), unique=True, nullable=False)
     description = db.Column(db.String(200), default="...")
 
-    # # The init method lets us create a python object to insert as a new row
-    # def __init__(self, course_name):
-    #     self.course_name = course_name
+    @property
+    def image_filename(self):
+        return f"/course_images/{self.course_id}.png"
 

@@ -3,6 +3,7 @@ from main import db
 from models.courses import Course
 from schemas.course_schema import courses_schema, course_schema
 from flask_login import login_required
+import os
 
 
 courses = Blueprint('courses', __name__)
@@ -40,7 +41,8 @@ def get_course(id):
     course = Course.query.get_or_404(id)
     data = {
         "page_title": "Course Detail",
-        "course": course_schema.dump(course)
+        "course": course_schema.dump(course),
+        "image": url_for('static', filename=course.image_filename)
     }
     return render_template("course_detail.html", page_data=data)
 
