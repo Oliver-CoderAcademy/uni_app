@@ -10,8 +10,7 @@ class Course(db.Model):
     # These attributes specify what columns the table should have
     course_id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(80), unique=True, nullable=False)
+    description = db.Column(db.String(200), default="No Description Provided")
 
-    # The init method lets us create a python object to insert as a new row
-    def __init__(self, course_name):
-        self.course_name = course_name
+
 

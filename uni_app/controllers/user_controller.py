@@ -53,3 +53,27 @@ def log_in():
         return redirect(url_for("courses.get_courses"))
 
     abort(401, "Login unsuccessful. Did you supply the correct username and password?")
+
+@users.route("/users/account/", methods = ["GET", "POST"])
+@login_required
+def user_detail():
+    if request.method == "GET":
+        data = {"page_title": "Account Details"}
+        return render_template("user_details.html", page_data = data)
+
+    user = User.query.filter_by(id = current_user.id)
+    updated_fields = user_schema.dump(request.form)
+    errors = user_update_schema.validate(updated_fields)
+
+    if errors:
+        raise ValidationError(message = errors)
+
+    user.update(updated_fields)
+    db.session.commit()
+    return redirect(url_for("users.get_users"))
+
+@users.route("/users/logout/", methods=["POST"])
+@login_required
+def log_out():
+    logout_user()
+    return redirect(url_for("users.log_in"))
