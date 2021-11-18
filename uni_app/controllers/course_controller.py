@@ -1,9 +1,9 @@
-from flask import Blueprint, jsonify, request, render_template, redirect, url_for
+from flask import Blueprint, jsonify, request, render_template, redirect, url_for, current_app
 from main import db
 from models.courses import Course
 from schemas.course_schema import courses_schema, course_schema
 from flask_login import login_required
-import os
+import boto3
 
 
 courses = Blueprint('courses', __name__)
@@ -39,10 +39,22 @@ def create_course():
 @courses.route("/courses/<int:id>/", methods = ["GET"])
 def get_course(id):
     course = Course.query.get_or_404(id)
+    
+    s3_client=boto3.client('s3')
+    bucket_name=current_app.config["AWS_S3_BUCKET"]
+    image_url = s3_client.generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket': bucket_name,
+            'Key': course.image_filename
+        },
+        ExpiresIn=100
+    )
+    
     data = {
         "page_title": "Course Detail",
         "course": course_schema.dump(course),
-        "image": url_for('static', filename=course.image_filename)
+        "image": image_url
     }
     return render_template("course_detail.html", page_data=data)
 
