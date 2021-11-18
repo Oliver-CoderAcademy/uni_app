@@ -14,5 +14,5 @@ class Course(db.Model):
 
     @property
     def image_filename(self):
-        return f"/course_images/{self.course_id}.png"
+        return f"course_images/{self.course_id}.png"
 
