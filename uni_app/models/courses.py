@@ -11,6 +11,8 @@ class Course(db.Model):
     course_id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(80), unique=True, nullable=False)
     description = db.Column(db.String(200), default="No Description Provided")
+    cost = db.Column(db.Integer, nullable=False, default=0)
+
 
 
 

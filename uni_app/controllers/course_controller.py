@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify, request, render_template, redirect, url_for
+from flask import Blueprint, jsonify, request, render_template, redirect, url_for, abort
 from main import db
 from models.courses import Course
 from schemas.course_schema import courses_schema, course_schema
+from flask_login import login_required, current_user
 
 courses = Blueprint('courses', __name__)
 
@@ -43,7 +44,6 @@ def get_course(id):
 # A PUT/PATCH route to update course info
 @courses.route("/courses/<int:id>/", methods=["POST"])
 def update_course(id):
-    
     course = Course.query.filter_by(course_id=id)
    
     updated_fields = course_schema.dump(request.form)
