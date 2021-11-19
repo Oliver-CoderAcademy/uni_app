@@ -10,9 +10,12 @@ class Course(db.Model):
     # These attributes specify what columns the table should have
     course_id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(80), unique=True, nullable=False)
-    description = db.Column(db.String(200), default="No Description Provided")
-    cost = db.Column(db.Integer, nullable=False, default=0)
+    description = db.Column(db.String(200), server_default="No Description Provided")
+    cost = db.Column(db.Integer, nullable=False, server_default="0")
 
+    @property
+    def image_filename(self):
+        return f"course_images/{self.course_id}.png"
 
 
 

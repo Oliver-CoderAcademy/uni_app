@@ -12,7 +12,7 @@ class User(UserMixin, db.Model):
     
     password = db.Column(db.String(200), nullable=False)
     
-    is_admin = db.Column(db.Boolean(), nullable=False, default=False)
+    is_admin = db.Column(db.Boolean(), nullable=False, server_default="False")
 
     is_superadmin = db.Column(db.Boolean(), nullable=False, server_default="False")
 
