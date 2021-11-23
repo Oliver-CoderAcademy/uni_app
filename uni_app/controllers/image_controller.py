@@ -2,12 +2,14 @@ from flask import Blueprint, request, redirect, abort, url_for, current_app
 from pathlib import Path
 from models.courses import Course
 import boto3
+from flask_login import login_required, current_user
 
 course_images = Blueprint('course_images', __name__)
 
 @course_images.route("/courses/<int:id>/image/", methods=["POST"])
+@login_required
 def update_image(id):
-    
+
     course = Course.query.get_or_404(id)
     
     if "image" in request.files:

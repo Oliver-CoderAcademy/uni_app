@@ -8,8 +8,8 @@ Tests are currently mostly disabled, having made the transition from an API serv
 
 The app runs on `Flask`, using a `PostgreSQL` database via `Psycopg2` and `SQLAlchemy`. Serialization is courtesy of `Marshmallow`, templating from `Jinja2`, migrations from `Flask-Migrate` with `Alembic`, and sessions via `Flask-Login`.
 
-## Upcoming features
-The next addition will be file storage using AWS S3. 
+Image upload and storage is handled with `boto3`, accessing an S3 bucket.
+
 
 ## Dependencies:
 * Python 3
@@ -51,6 +51,9 @@ psql postgres
 >> \q
 ```
 
+### CREATE S3 BUCKET WITH IAM POLICY
+The user needs to have programmatic access to the bucket to perform `GetObject`, `PutObject` and `DeleteObject` actions. See Term 3 Day 17 lesson content for more details.
+
 ### SET ENVIRONMENT VARIABLES. 
 Easiest during development is to add a `.env` file to the `/uni_app/` directory like so:
 ```bash
@@ -59,17 +62,14 @@ DB_PASS = # value from above
 DB_NAME = # value from above
 DB_DOMAIN = "localhost:5432"
 SECRET_KEY = # dealer's choice - a long random string is most secure
+AWS_ACCESS_KEY_ID= # value from AWS
+AWS_SECRET_ACCESS_KEY=# value from AWS
+AWS_S3_BUCKET=# value from AWS
 ```
 
 ### CREATE/MIGRATE TABLES USING TERMINAL COMMANDS
 
 Terminal commands for the app must be executed from the `/uni_app/uni_app/` directory. Currently available commands are:
-
-`flask db drop` -> drops all tables 
-
-`flask db create` -> creates all tables
-
-**NOTE: As of Thursday 18th of November, these commands will change to accomodate `flask-migrate` functionality.** New commands will be:
 
 `flask db-custom drop` -> drops all tables
 
