@@ -22,6 +22,12 @@ class User(UserMixin, db.Model):
         nullable=False
     )
 
+    courses = db.relationship(
+        'Course', 
+        backref="creator",
+        lazy="joined"
+    )
+
     def check_password(self, password):
         return check_password_hash(self.password, password)
 

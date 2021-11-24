@@ -2,9 +2,19 @@
 {% block content %}
 
     <h2>{{ page_data.course.course_name }}</h2>
-    <p>Course ID: {{ page_data.course.course_id }}</p>
+    <p>
+        Course ID: {{ page_data.course.course_id }}
+        <br>
+        Creator: {{ page_data.course.creator.name }} ({{ page_data.course.creator.email }})
+    </p>
 
     <img src= "{{ page_data.image }}" style="width: 250px">
+    <form action="/courses/{{ page_data.course.course_id }}/enrol/" method="POST">
+        <button>Enrol</button>
+    </form>
+    <form action="/courses/{{ page_data.course.course_id }}/drop/" method="POST">
+        <button>Un-Enrol</button>
+    </form>
     <br/><br/>
     <h3>Update Course Info</h3>
     <form action="/courses/{{ page_data.course.course_id }}/" method="POST">
