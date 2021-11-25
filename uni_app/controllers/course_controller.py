@@ -26,10 +26,15 @@ def get_courses():
 
 # The POST route endpoint
 @courses.route("/courses/", methods=["POST"])
+@login_required
 def create_course():
     new_course=course_schema.load(request.form)
+    
+    new_course.creator = current_user
+    
     db.session.add(new_course)
     db.session.commit()
+
     return redirect(url_for("courses.get_courses"))
 
 # An endpoint to GET info about a specific course
@@ -57,8 +62,12 @@ def get_course(id):
 
 # A PUT/PATCH route to update course info
 @courses.route("/courses/<int:id>/", methods=["POST"])
+@login_required
 def update_course(id):
     course = Course.query.filter_by(course_id=id)
+    
+    if current_user.id != course.first().creator_id:
+        abort(403, "You do not have permission to alter this course!")
    
     updated_fields = course_schema.dump(request.form)
     if updated_fields:
@@ -71,15 +80,30 @@ def update_course(id):
     }
     return render_template("course_detail.html", page_data=data)
 
-# Finally, we round out our CRUD resource with a DELETE method
-@courses.route("/courses/<int:id>/delete/", methods=["POST"])
-def delete_course(id):
-    # Can't delete a course that doesn't exist, so get_or_404 here is correct
+@courses.route("/courses/<int:id>/enrol/", methods=["POST"])
+@login_required
+def enrol_in_course(id):
     course = Course.query.get_or_404(id)
-    # delete the course and commit the transaction
+    course.students.append(current_user)
+    db.session.commit()
+    return redirect(url_for('users.user_detail'))
+
+@courses.route("/courses/<int:id>/drop/", methods=["POST"])
+@login_required
+def drop_course(id):
+    course = Course.query.get_or_404(id)
+    course.students.remove(current_user)
+    db.session.commit()
+    return redirect(url_for('users.user_detail'))
+
+@courses.route("/courses/<int:id>/delete/", methods=["POST"])
+@login_required
+def delete_course(id):
+    course = Course.query.get_or_404(id)
+
+    if current_user.id != course.creator_id:
+        abort(403, "You do not have permission to delete this course!")
+
     db.session.delete(course)
     db.session.commit()
-    # We deleted the row in the database but we still have the python object
-    # since we fetched it before we called session.delete, so we can 
-    # serialize it and return it to the user to show them what they deleted!
     return redirect(url_for("courses.get_courses"))

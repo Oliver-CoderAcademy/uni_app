@@ -8,6 +8,14 @@ class CourseSchema(ma.SQLAlchemyAutoSchema):
     course_name = auto_field(required=True, validate=Length(min=1))
     description = auto_field(validate=Length(min=1))
     cost = auto_field(required = False, validate=Range(0, 500))
+    creator = ma.Nested(
+        "UserSchema",
+        only=("id", "name", "email",)
+    )
+    students = ma.Nested(
+        "UserSchema",
+        only=("id", "name", "email",)
+    )
 
     class Meta:
         model = Course

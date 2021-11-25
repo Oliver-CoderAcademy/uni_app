@@ -14,6 +14,13 @@
     </form>
 
     <p>User is admin: {{ current_user.is_admin }}</p>
+    <br><br>
+    <h3>Enrolled Courses:</h3>
+    <ul>
+        {% for course in current_user.enrolled_courses %}
+            <li><a href="/courses/{{ course.course_id }}/">{{ course.course_name }}</a></li>
+        {% endfor %}
+    </ul>
 
 </div>
 
