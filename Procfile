@@ -1,1 +1,1 @@
-web: gunicorn uni_app/wsgi:app
+web: gunicorn --chdir ./uni_app wsgi:app
